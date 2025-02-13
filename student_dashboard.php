@@ -1,7 +1,8 @@
 <?php
 session_start();
-include("db.php");
+include("db.php"); // Include the database connection file
 
+// Check if the student is logged in
 if (!isset($_SESSION['usn'])) {
     header("Location: login.php");
     exit();
@@ -9,6 +10,11 @@ if (!isset($_SESSION['usn'])) {
 
 // Fetch all institutes from the `rsst` table
 $institutes_query = $conn->query("SELECT * FROM rsst");
+
+// Error checking for the query
+if (!$institutes_query) {
+    die("Error fetching institutes: " . mysqli_error($conn));
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +38,8 @@ $institutes_query = $conn->query("SELECT * FROM rsst");
             padding: 20px;
             height: 100vh;
             position: fixed;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
         .sidebar h2 {
             text-align: center;
@@ -68,6 +75,27 @@ $institutes_query = $conn->query("SELECT * FROM rsst");
             border-radius: 5px;
             text-align: center;
         }
+
+        /* Logout Box at the Bottom */
+        .logout-box {
+            margin-top: auto; /* Pushes it to the bottom */
+            padding: 10px;
+            font-size: 16px;
+            background-color: #e74c3c;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .logout-box:hover {
+            background-color: #c0392b;
+        }
+        .logout-box a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -75,11 +103,34 @@ $institutes_query = $conn->query("SELECT * FROM rsst");
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>Institutes</h2>
-        <?php while ($row = $institutes_query->fetch_assoc()) { ?>
-            <button onclick="loadInstitute(<?php echo $row['id']; ?>)">
-                <?php echo htmlspecialchars($row['institute_name']); ?>
-            </button>
-        <?php } ?>
+        <?php 
+        // Check if we have any institutes
+        if (mysqli_num_rows($institutes_query) > 0) {
+            while ($row = $institutes_query->fetch_assoc()) { 
+                // Linking to respective institute pages
+                if ($row['institute_name'] === 'RV Institute of Technology') {
+                    echo '<button onclick="window.location.href=\'rvit.php\'">' . htmlspecialchars($row['institute_name']) . '</button>';
+                } elseif ($row['institute_name'] === 'RV College of Engineering') {
+                    echo '<button onclick="window.location.href=\'rvce.php\'">' . htmlspecialchars($row['institute_name']) . '</button>';
+                } elseif ($row['institute_name'] === 'RV School of Architecture') {
+                    echo '<button onclick="window.location.href=\'rvsa.php\'">' . htmlspecialchars($row['institute_name']) . '</button>';
+                } elseif ($row['institute_name'] === 'RV Institute of Management') {
+                    echo '<button onclick="window.location.href=\'rvim.php\'">' . htmlspecialchars($row['institute_name']) . '</button>';
+                } elseif ($row['institute_name'] === 'RV College of Nursing') {
+                    echo '<button onclick="window.location.href=\'rvcn.php\'">' . htmlspecialchars($row['institute_name']) . '</button>';
+                } else {
+                    echo '<button onclick="loadInstitute(' . $row['institute_id'] . ')">' . htmlspecialchars($row['institute_name']) . '</button>';
+                }
+            }
+        } else {
+            echo "<p>No institutes found.</p>";
+        }
+        ?>
+
+        <!-- Logout Box at Bottom -->
+        <div class="logout-box">
+            <a href="logout.php">Logout</a>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -90,9 +141,12 @@ $institutes_query = $conn->query("SELECT * FROM rsst");
     </div>
 
     <script>
-        function loadInstitute(id) {
-            alert("Load institute with ID: " + id);
-            // You can implement AJAX here to load institute details dynamically
+        function loadInstitute(instituteId) {
+            if (!instituteId) {
+                console.error("Error: Institute ID is undefined.");
+                return;
+            }
+            window.location.href = "institute.php?id=" + instituteId;
         }
     </script>
 
