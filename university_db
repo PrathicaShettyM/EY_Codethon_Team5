@@ -1,0 +1,50 @@
+-- 1. Create a new database
+CREATE DATABASE university_db;
+
+-- 2. Use the newly created database
+USE university_db;
+
+-- 3. Create the rsst table
+CREATE TABLE rsst (
+    institute_id INT PRIMARY KEY,       -- Primary key for institute
+    institute_name VARCHAR(255) NOT NULL, -- Name of the institute
+    address VARCHAR(255) NOT NULL         -- Address of the institute
+);
+
+-- 4. Create the institute table
+CREATE TABLE institute (
+    department_id INT PRIMARY KEY,       -- Primary key for department
+    department_name VARCHAR(255) NOT NULL -- Name of the department
+);
+
+-- 5. Create the department table
+CREATE TABLE department (
+    professor_id INT PRIMARY KEY,           -- Primary key for professor
+    professor_name VARCHAR(255) NOT NULL,    -- Name of the professor
+    professor_designation VARCHAR(255) NOT NULL  -- Designation of the professor
+);
+
+-- 6. Alter the institute table to add institute_id as a foreign key
+ALTER TABLE institute
+ADD COLUMN institute_id INT,              -- Adding new institute_id column
+ADD CONSTRAINT fk_institute               -- Foreign key constraint
+FOREIGN KEY (institute_id) REFERENCES rsst(institute_id);  -- References rsst table
+
+-- 7. Alter the department table to add department_id as a foreign key
+ALTER TABLE department
+ADD COLUMN department_id INT,              -- Adding new department_id column
+ADD CONSTRAINT fk_department              -- Foreign key constraint
+FOREIGN KEY (department_id) REFERENCES institute(department_id);  -- References institute table
+
+-- 8. Create the student table
+CREATE TABLE student (
+    usn VARCHAR(20) PRIMARY KEY,             -- Primary key for student (USN)
+    student_name VARCHAR(255) NOT NULL,       -- Name of the student
+    password VARCHAR(255) NOT NULL,           -- Password for the student
+    department_id INT,                       -- Department ID as a foreign key
+    FOREIGN KEY (department_id) REFERENCES institute(department_id)  -- Foreign key to institute table
+);
+
+-- 9. Alter the department table to add a password field
+ALTER TABLE department
+ADD COLUMN password VARCHAR(255) NOT NULL;  -- Adding a password field to department
