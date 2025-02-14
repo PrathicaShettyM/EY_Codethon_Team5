@@ -10,9 +10,6 @@ Welcome to the University Dashboard created for the EY Codethon by Team 5. This 
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Setup and Installation](#setup-and-installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
